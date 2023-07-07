@@ -3,16 +3,17 @@ import enum
 from collections import namedtuple
 
 # define our player class
-class Player(enum.Enum):
-    # we are using an enumaration class for our players
-    # this means we can have two playeres, 1 and 2, corresponding to black and white
+class player(enum.Enum):
+    # we are using an enumaration class for both of our players
+    # this means we have two playeres, 1 and 2, corresponding to black and white, on the same class object
     black = 1
     white = 2
 
-    @property
+    @property # we use the property decorator to define a method that can be called as an attribute
     def other(self):
-        return Player.black if self == Player.white else Player.white
-
+        return player.black if self == player.white else player.white
+        # this method allows us to see which player is our opponent 
+        
 class Point(namedtuple('Point','row col')):
     def neighbors(self):
         return [

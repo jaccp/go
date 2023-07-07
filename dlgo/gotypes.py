@@ -13,13 +13,17 @@ class player(enum.Enum):
     def other(self):
         return player.black if self == player.white else player.white
         # this method allows us to see which player is our opponent 
-        
-class Point(namedtuple('Point','row col')):
+
+class point(namedtuple('point', ['row', 'col'])):
+    # namedtuple allows us to access the coordinates of our point
+    # using point.row and point.col instead of point[0] and point[1]
     def neighbors(self):
+        # define the neighbord of the point as those that are directly above,
+        # below, left and right of the point
         return [
-            Point(self.row - 1, self.col),
-            Point(self.row + 1, self.col),
-            Point(self.row, self.col - 1),
-            Point(self.row, self.col + 1)
+            point(self.row - 1, self.col),
+            point(self.row + 1, self.col),
+            point(self.row, self.col - 1),
+            point(self.row, self.col + 1)
         ]
 

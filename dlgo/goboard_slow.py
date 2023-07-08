@@ -93,6 +93,13 @@ class Board():
         # this checks that a point is within the limits of the board
         return 1 <= point.row <= self.num_rows and \
         1 <= point.col <= self.num_cols
+    
+    def get(self, point):
+        # returns the content of a point on the board: a player is a stone is on that point, else None
+        string = self._grid.get(point)
+        if string is None:
+            return None
+        return string.color
 
 
 

@@ -17,7 +17,7 @@ class Player(enum.Enum):
 class Point(namedtuple('point', ['row', 'col'])):
     # namedtuple allows us to access the coordinates of our point
     # using point.row and point.col instead of point[0] and point[1]
-    def neighbors(self):
+    def neighbours(self):
         # define the neighbord of the point as those that are directly above,
         # below, left and right of the point
         return [

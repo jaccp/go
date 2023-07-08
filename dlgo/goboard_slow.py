@@ -89,4 +89,8 @@ class Board():
                     adjacent_opposite_colour.append(neighbour_string)
         new_string = GoString(player, [point], liberties)
 
+        def is_on_grid(self, point):
+            return 1 <= point.row <= self.num_rows and \
+            1 <= point.col <= self.num_cols
+
 

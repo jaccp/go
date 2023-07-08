@@ -67,3 +67,26 @@ class Board():
         self.num_rows = num_rows
         self.num_cols = num_cols
         self._grid = {}
+
+    def place_stone(self, player, point):
+        # this function allows the placing of stones, where we must check for neighbours 
+        assert self.is_on_grid(point) # check stone will be on grid - defined below
+        assert self._grid.get(point) is None # check stone is not already on the board at that point
+        adjacent_same_colour = []
+        adjacent_opposite_colour = []
+        liberties = []
+        for neighbour in point.neighbours(): # for all 4 neighbouring points...
+            if not self.is_on_grid(neighbour): # check the neighbour is not on grid
+                continue # if it is not on grid then continue, otherwise break and go to next neighbour
+            neighbour_string = self._grid.get(neighbour)
+            if neighbour_string is None:
+                liberties.append(neighbour)
+            elif neighbour_string.colour == player:
+                if neighbour_string not in adjacent_same_colour:
+                    adjacent_same_colour.append(neighbour_string)
+            else:
+                if neighbour_string not in adjacent_opposite_colour:
+                    adjacent_opposite_colour.append(neighbour_string)
+        new_string = GoString(player, [point], liberties)
+
+

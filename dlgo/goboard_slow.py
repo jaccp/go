@@ -101,5 +101,10 @@ class Board():
             return None
         return string.color
 
-
-
+    def get_go_string(self, point):
+        # similar to above get method, but with the distinction that we are now 
+        # returning the entire string of stones at a point: a GoString if a stone is on that point, else None
+        string = self._grid.get(point)
+        if string is None:
+            return None
+        return string

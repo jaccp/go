@@ -25,3 +25,39 @@ class Move():
     def resign(cls):
         return Move(is_resign=True)
     
+class GoString():
+    # this is whree we will track connected groups of stones
+    def __init__(self, color, stones, liberties):
+        self.color = color
+        self.stones = set(stones)
+        self.liberties = set(liberties)
+
+    def remove_liberty(self, point):
+        self.liberties.remove(point)
+
+    def add_liberty(self, point):
+        self.liberties.add(point)
+
+    def merged_with(self, go_string):
+        # used to track when a string merges with another string by placing a stone
+        assert go_string.color == self.color
+        combined_stones = self.stones | go_string.stones
+        return GoString(
+            self.color,
+            combined_stones,
+            (self.liberties | go_string.liberties) - combined_stones
+        )
+
+    @property
+    def num_liberties(self):
+        return len(self.liberties)
+    
+    def __eq__(self, other):
+        # the __eq__ is called the dunder method 
+        # this allows us to define what python does when comparing two objects of a class when using '=='
+        # we want python to perform a thorough check that both strings are part of the same string
+        # # we do this by checking that they are both GoString object of the same color, with the same stones and liberties 
+        return isinstance(other, GoString) and \
+            self.color == other.color and \
+            self.stones == other.stones and \
+            self.liberties == other.liberties

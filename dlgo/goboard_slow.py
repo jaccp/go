@@ -45,7 +45,7 @@ class GoString():
         return GoString(
             self.color,
             combined_stones,
-            (self.liberties | go_string.liberties) - combined_stones
+            (self.liberties | go_string.liberties) - combined_stones # spacially, this translates to us removing the liberty at the point where we have added the briding stone between the two strings
         )
 
     @property
@@ -53,8 +53,7 @@ class GoString():
         return len(self.liberties)
     
     def __eq__(self, other):
-        # the __eq__ is called the dunder method 
-        # this allows us to define what python does when comparing two objects of a class when using '=='
+        # the __eq__ is a dunder method that allows us to define what python does when comparing two objects of a class when using '=='
         # we want python to perform a thorough check that both strings are part of the same string
         # # we do this by checking that they are both GoString object of the same color, with the same stones and liberties 
         return isinstance(other, GoString) and \

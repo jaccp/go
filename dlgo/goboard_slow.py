@@ -71,7 +71,7 @@ class Board():
     def place_stone(self, player, point):
         # this function allows the placing of stones, where we must check for neighbours 
         assert self.is_on_grid(point) # check stone will be on grid - defined below
-        assert self._grid.get(point) is None # check stone is not already on the board at that point
+        assert self._grid.get(point) is None # check stone is not already on the board at that point - defined below
         adjacent_same_colour = []
         adjacent_opposite_colour = []
         liberties = []

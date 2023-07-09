@@ -124,3 +124,51 @@ class Board():
         if string is None:
             return None
         return string
+    
+    def _remove_string(self, string):
+        for point in string.stones:
+            for neighbour in point.neighbours():
+                neighbour_string = self._grid.get(neighbour)
+                if neighbour_string is None:
+                    continue
+                if neighbour_string is not string:
+                    neighbour_string.add_liberty(point)
+            self._grid[point] = None
+
+class GameState():
+    # the GameState class tracks the board position, the next player, the previous game state and last move played
+    def __init__(self, board, next_player, previous, move):
+        self.board = board
+        self.next_player = next_player
+        self.previous_state = previous
+        self.last_move = move
+
+    def apply_move(self, move): # this returns the new GameState after applying the move
+        if move.is_play: # if the move is to place a stone then copy the board and place the stone on the new copy for the next player - since the current board state will be for the previous player
+            next_board = copy.deepcopy(self.board)
+            next_board.place_stone(self.next_player, move.point)
+        else: # if move is not to place stone then the next board state is just the same as the current board state
+            next_board = self.board
+        return GameState(board=next_board, next_player=self.next_player.other, previous_state=self, last_move=move)
+    
+    @classmethod
+    def new_game(cls, board_size): # create a new game with a specified board size
+        if isinstance(board_size, int): # check that board_size in an integer
+            board_size = (board_size, board_size)
+        board = Board(*board_size) # create instance of Board class with our specified board size
+        return GameState(board=board, next_player=Player.black, previous_state=None, last_move=None) # returns the starting gamestate with the new board. black is next to play, there is no previous player and there is no last move
+    
+    def is_over(self): # work out if the game is over
+        if self.last_move is None:
+            return False
+        if self.last_move.is_resign: # resigning will cause the game to end
+            return True
+        second_last_move = self.previous_state.last_move # second last move is defined using the previous game state's last move - now it is obvious why we capture it in this way
+        if second_last_move is None:
+            '''
+            don't undestand the point of this part? 
+            '''
+            return False
+        return self.last_move.is_pass and second_last_move.is_pass 
+    
+    

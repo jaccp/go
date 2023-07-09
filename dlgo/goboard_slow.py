@@ -49,7 +49,7 @@ class GoString():
         )
 
     @property
-    def num_liberties(self):
+    def num_liberties(self): # returns the number of liberties
         return len(self.liberties)
     
     def __eq__(self, other):
@@ -72,22 +72,38 @@ class Board():
         # this function allows the placing of stones, where we must check for neighbours 
         assert self.is_on_grid(point) # check stone will be on grid - defined below
         assert self._grid.get(point) is None # check stone is not already on the board at that point - defined below
-        adjacent_same_colour = []
-        adjacent_opposite_colour = []
-        liberties = []
+        
+        adjacent_same_colour = [] # create list to track adjacent points of the same colour
+        adjacent_opposite_colour = [] # create list to track adjacent points of the opposite colour
+        liberties = [] # create list to track liberties of the placed stone
+        
         for neighbour in point.neighbours(): # for all 4 neighbouring points...
             if not self.is_on_grid(neighbour): # check the neighbour is not on grid
-                continue # if it is not on grid then continue, otherwise break and go to next neighbour
-            neighbour_string = self._grid.get(neighbour)
+                continue # if it is not on grid then continue with loop, i.e. skip to the next neighbour
+            neighbour_string = self._grid.get(neighbour) # define string using current point on grid using our get method. this can return either None or the player colour
             if neighbour_string is None:
-                liberties.append(neighbour)
+                liberties.append(neighbour) # add this point to the placed stone liberties if there is no other stone at this point
             elif neighbour_string.colour == player:
                 if neighbour_string not in adjacent_same_colour:
-                    adjacent_same_colour.append(neighbour_string)
+                    adjacent_same_colour.append(neighbour_string) # add current player colour to adjacent_same_colour list if its not already there
             else:
                 if neighbour_string not in adjacent_opposite_colour:
-                    adjacent_opposite_colour.append(neighbour_string)
-        new_string = GoString(player, [point], liberties)
+                    adjacent_opposite_colour.append(neighbour_string) # add opposite player colour to adjacent_opposite_colour list if its not already there
+        
+        new_string = GoString(player, [point], liberties) 
+
+        for same_colour_string in adjacent_same_colour: # merge  any adjacent string of the same colour
+            new_string = new_string.merged_with(same_colour_string)
+
+        for new_string_point in new_string.stones: # map each stone in new_string to the _grid dictionary
+            self._grid[new_string_point] = new_string
+        
+        for other_colour_string in adjacent_opposite_colour: #reduce liberties of any adjacent string of the opposite colour
+            other_colour_string.remove_liberty(point)
+
+        for other_colour_string in adjacent_opposite_colour: # if any opposite colour stings now have zero liberties then remove them
+            if other_colour_string.num_liberties == 0:
+                self._remove_string(other_colour_string)
 
     def is_on_grid(self, point):
         # this checks that a point is within the limits of the board

@@ -171,4 +171,40 @@ class GameState():
             return False
         return self.last_move.is_pass and second_last_move.is_pass 
     
+    def is_move_self_capture(self, player, move):
+        # check if the move is self capture by checking the liberties of the string
+        if not move.is_play:
+            return False
+        next_board = copy.deepcopy(self.board) # we only check for self capture after removing the opponents cpatured stones, so we make the move then check the next board state
+        next_board.place_stone(player, move.point)
+        new_string = next_board.get_go_string(move.point)
+        return new_string.num_liberties == 0
     
+    @property
+    def situation(self):
+        # we will use the sitation property to check that a move does not violate the ko rule, i.e. a move is illegal if it would return the board state to a previous position 
+        return (self.next_player, self.board)
+    
+    def does_move_violate_ko(self, player, move):
+        # our method to enforce the ko rule is to ensure that a player may not play a stone that would recreate a previous game state, where the game state includes both the stones on the board and the player whose turn is next
+        if not move.is_play:
+            return False
+        next_board = copy.deepcopy(self.board)
+        next_board.place_stone(player, move.point)
+        next_situation = (player.other, next_board)
+        past_state = self.previous_state
+        while past_state is not None:
+            if past_state.situation == next_situation: 
+                return True
+            past_state = past_state.previous_state # cycle through all previous situations, comparing each to the current situation
+        return False
+            
+    def is_valid_move(self, move): # check that move is vald using both ko and self-capture rules
+        if self.is_over():
+            return False
+        if move.is_pass or move.is_resign:
+            return (
+                self.board.get(move.point) is None and
+                not self.is_move_self_capture(self.next.player, move) and
+                not self.does_move_violate_ko(self.next_player,move)
+            )
